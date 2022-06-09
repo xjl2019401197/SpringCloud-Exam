@@ -1,0 +1,9 @@
+server:
+  port: 9527
+spring:
+  application:
+    name: api-gateway-nacos
+  cloud:
+    nacos:
+      discovery:
+        server-addr: 127.0.0.1:8848
