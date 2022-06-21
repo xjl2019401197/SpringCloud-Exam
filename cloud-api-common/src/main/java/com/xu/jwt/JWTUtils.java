@@ -50,6 +50,7 @@ public class JWTUtils {
     }
     public static Claims checkJWT(String token){
         try{
+
             final Claims claims = Jwts.parser().setSigningKey(secret)
                     .parseClaimsJws(token.replace(Token_PreFix, ""))
                     .getBody();

@@ -40,7 +40,7 @@ management:
 
 #消费者将要去访问的微服务名称(注册成功进nacos的微服务提供者)
 service-url:
-  nacos-user-service: http://nacos-payment-provider
+  nacos-user-service: http://cloud-gateway
 
 #mybatis-plus开启二级缓存
 mybatis-plus:
