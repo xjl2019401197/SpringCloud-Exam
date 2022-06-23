@@ -29,19 +29,21 @@
 //        System.out.println(path);
 //        //认证和授权功能
 //       //以下请求可以直接访问
-//        if(path.contains("static")||path.equals("/login")||path.equals("/register")||path.equals("/tologin")||path.equals("/toregister"))
-//            return chain.filter(exchange);
-//
+////        if(path.contains("static")||path.equals("/login")||path.equals("/register")||path.equals("/tologin")||path.equals("/toregister"))
+////            return chain.filter(exchange);
+////
 //       //登录后可以访问
 //        Jedis jedis = JedisUtil.getJedis();
 //        if(path.contains("admin") && jedis.get("admin") != null|| path.contains("teacher") && jedis.get("teacher") != null ||path.contains("student") && jedis.get("student") != null)
 //        return chain.filter(exchange);
-//
-////        if(exchange.getRequest().getCookies().get("id") != null)
-////            return chain.filter(exchange);
-//        //其他请求全部拒绝
-//        exchange.getResponse().setStatusCode(HttpStatus.NOT_ACCEPTABLE);
+////
+//////        if(exchange.getRequest().getCookies().get("id") != null)
+//////            return chain.filter(exchange);
+////        //其他请求全部拒绝
+////        exchange.getResponse().setStatusCode(HttpStatus.NOT_ACCEPTABLE);
 //        return exchange.getResponse().setComplete();
+////        return chain.filter(exchange);
+//
 //    }
 //
 //    @Override

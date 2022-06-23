@@ -33,6 +33,7 @@ public class LoginController {
     public String tologin(HttpServletRequest request,HttpServletResponse response, String id, String Password, String type, Model model){
         System.out.println(id+"  "+Password +" "+type);
         R r = restTemplate.getForObject(serverURL + "/tologin/{id}/{Password}/{type}", R.class, id, Password, type);
+        System.out.println(r);
         if(!r.getFlag()) {
             model.addAttribute("message","用户名或密码错误");
         }
