@@ -117,6 +117,7 @@
     <%
         int selindex = 0;
         int judindex = 0;
+        int mulindex = 0;
     %>
     <div  style="position: absolute; right: 130px; width: 300px;height: 300px;border: 0 solid white;">
         <iframe id="frame" name="frame" src="http://127.0.0.1:5001/" style="width: 300px;height: 300px; border: 0 solid white;"scrolling="no">
@@ -128,6 +129,7 @@
     <div class="container">
         <div class="row">
             <div class="col-sm-8" style="top: 20px">
+                <br/>
                 <h3>一、单选题（每题${exam.selscore}分）</h3>
                 <c:forEach items="${choicelist}" var="ch" varStatus="list">
                     <form class="layui-form">
@@ -143,6 +145,9 @@
                         </fieldset>
                     </form>
                 </c:forEach>
+                <br/>
+                <br/>
+                <br/>
 
                 <h3>二、判断题（每题${exam.judscore}分）</h3>
                 <c:forEach items="${judgelist}" var="ju">
@@ -153,6 +158,26 @@
                             </div>
                             <input class="layui-form-radio" type="radio" name="Judge" value="正确"/>正确<br/>
                             <input class="layui-form-radio" type="radio" name="Judge" value="错误"/>错误<br/>
+                            <br/>
+                        </fieldset>
+                    </form>
+                </c:forEach>
+
+                <br/>
+                <br/>
+                <br/>
+
+                <h3>三、多选题题（每题${exam.multiplescore}分）</h3>
+                <c:forEach items="${multiplelist}" var="mul">
+                    <form class="layui-form">
+                        <fieldset>
+                            <div>
+                                <h3 style="margin-top: 10px;margin-bottom: 10px"><%=++mulindex%>、${mul.topic}</h3>
+                            </div>
+                                 <input type="checkbox" name="Multiple"  value="A"><span style="margin-left: 20px;margin-right: 10px">A:</span>${mul.a}<br/>
+                                 <input type="checkbox" name="Multiple"  value="B"><span style="margin-left: 20px;margin-right: 10px">B:</span>${mul.b}<br/>
+                                 <input type="checkbox" name="Multiple"  VALUE="C"><span style="margin-left: 20px;margin-right: 10px">C:</span>${mul.c}<br/>
+                                 <input type="checkbox" name="Multiple"  value="D"><span style="margin-left: 20px;margin-right: 10px">D:</span>${mul.d}<br/>
                             <br/>
                         </fieldset>
                     </form>
@@ -195,8 +220,11 @@
     var getValue = function () {
         var Select = document.getElementsByName("Select");
         var Judge = document.getElementsByName("Judge");
+        var Judge = document.getElementsByName("Judge");
+        var Multiple = document.getElementsByName("Multiple");
         var answerchoice = new Array();
         var answerjudge = new Array();
+        var answermultiple = new Array();
         for (i = 0; i < Select.length; i++) {
             if (Select[i].checked) {
                 answerchoice.push(Select[i].value);
@@ -207,11 +235,24 @@
                 answerjudge.push(Judge[i].value);
             }
         }
-        if (answerchoice.length < ${exam.selnum} || answerjudge.length < ${exam.judnum}) {
+        for (i = 0; i < Multiple.length / 4; i++) {
+            var temp= "";
+            var pom = ['A','B','C','D']
+            for ( j = 0; j < 4; j ++){
+                if(Multiple[i*4+j].checked)
+                temp += pom[j];
+            }
+            answermultiple.push(temp);
+            // if (Multiple[i].checked) {
+            //     alert(Multiple[i].checked)
+            //     // answerjudge.push(Judge[i].value);
+            // }
+        }
+        if (answerchoice.length < ${exam.selnum} || answerjudge.length < ${exam.judnum} || answermultiple < ${exam.multiplenum}) {
             alert("还有未选择的题目");
         } else {
             location.href = "<%=basePath%>/submittest?examid=" + ${exam.id}+
-                '&studentid=' + ${Stuid} +'&answerchoice=' + answerchoice + '&answerjudge=' + answerjudge;
+                '&studentid=' + ${Stuid} +'&answerchoice=' + answerchoice + '&answerjudge=' + answerjudge+'&answermultiple=' + answermultiple ;
             // alert("选择答案" +  answerchoice + "填空题答案" + answerjudge);
         }
     }

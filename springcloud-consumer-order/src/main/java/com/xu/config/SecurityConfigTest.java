@@ -1,11 +1,15 @@
 package com.xu.config;
 
 import com.xu.redis.JedisUtil;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import redis.clients.jedis.Jedis;
 
 @Configuration
@@ -13,10 +17,19 @@ import redis.clients.jedis.Jedis;
 @EnableGlobalMethodSecurity(securedEnabled = true, prePostEnabled = true)
 public class SecurityConfigTest extends WebSecurityConfigurerAdapter {
 
+    @Bean
+    @Override
+    public AuthenticationManager authenticationManagerBean() throws Exception {
+        return super.authenticationManagerBean();
+    }
+
+    @Bean
+    PasswordEncoder password(){
+        return new BCryptPasswordEncoder();
+    }
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
-        System.out.println("开始验证");
         //自定义403页面
 //        http.exceptionHandling().accessDeniedPage("/unauth");
         //自定义退出页面
@@ -40,6 +53,4 @@ public class SecurityConfigTest extends WebSecurityConfigurerAdapter {
                 .and().csrf().disable();                 //csrf防护关闭
         http.headers().frameOptions().disable();
     }
-
-
 }

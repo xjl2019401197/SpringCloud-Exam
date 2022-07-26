@@ -103,6 +103,7 @@ public class AdminController {
         int i = 0;
         for (String id : ids) {
             list.add(id);
+            System.out.println(id);
         }
         return restTemplate.postForObject(serverURL + "/deleteselect", list, R.class);
     }
@@ -179,6 +180,76 @@ public class AdminController {
     public String updatejudge(Judge judge) {
         return restTemplate.postForObject(serverURL + "/updatejudge", judge, String.class);
 
+    }
+
+
+    /*
+     * 多选题
+     * */
+    @RequestMapping("/multipleChoice")
+    public String multipleChoice() {
+        return "admin/multipleChoice";
+    }
+
+    @RequestMapping("/addmultipleChoice")
+    public String addmultipleChoice() {
+        return "admin/addmultipleChoice";
+    }
+
+    @RequestMapping("/allmultipleChoice")
+    @ResponseBody
+    public String allmultipleChoice(){
+        return restTemplate.getForObject(serverURL + "/allmultipleChoice", String.class);
+    }
+    @RequestMapping("/insertmultipleChoice")
+    @ResponseBody
+    public String insertmultipleChoice(MultipleChoice multipleChoice) {
+        System.out.println(multipleChoice);
+        return restTemplate.postForObject(serverURL + "/insertmultipleChoice", multipleChoice, String.class);
+    }
+
+
+    @PostMapping("/UploadmultipleChoice")
+    public String UploadmultipleChoice(MultipartHttpServletRequest multipartRequest) {
+        MultipartFile file = multipartRequest.getFile("file");
+        System.out.println("进来了" + file);
+        List<List<Object>> listob = null;
+        try {
+
+            listob = new ExcelUtils().getBankListByExcel(file.getInputStream(), file.getOriginalFilename());
+            System.out.println(listob);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return restTemplate.postForObject(serverURL + "/UploadmultipleChoice", listob, String.class);
+    }
+
+    @GetMapping("/deletemultipleChoice")
+    @ResponseBody
+    public R deletemultipleChoice(HttpServletRequest request) {
+        String[] ids = request.getParameterValues("ids");
+        ArrayList<String> list = new ArrayList<>();
+        int i = 0;
+        for (String id : ids) {
+            list.add(id);
+            System.out.println(id);
+        }
+        return restTemplate.postForObject(serverURL + "/deletemultipleChoice", list, R.class);
+    }
+
+    @RequestMapping("/updatemultipleChoicejsp")
+    public String updatemultipleChoicejsp(HttpServletRequest request, Model model) {
+        System.out.println("id=>" + request.getParameter("id"));
+        Choice item = restTemplate.getForObject(serverURL + "/updatemultipleChoicejsp/" + request.getParameter("id"), Choice.class);
+        model.addAttribute("item", item);
+        return "admin/updatemultipleChoicejsp";
+    }
+
+    @RequestMapping("/updatemultipleChoice")
+    @ResponseBody
+    public String updatemultipleChoice(Choice item) {
+        return restTemplate.postForObject(serverURL + "/updatemultipleChoice", item, String.class);
     }
 
 

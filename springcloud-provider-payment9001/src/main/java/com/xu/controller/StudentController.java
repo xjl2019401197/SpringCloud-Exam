@@ -28,6 +28,9 @@ public class StudentController {
     private JudgeService judgeService;
 
     @Autowired
+    private MultipleChoiceService multipleChoiceService;
+
+    @Autowired
     private TestService testService;
 
 
@@ -56,13 +59,15 @@ public class StudentController {
         Exam exam = examService.getById(Integer.parseInt(id));
         String Sellist = exam.getSellist();
         String Judlist = exam.getJudlist();
+        String Mullist = exam.getMultiplelist();
         List<Integer> Selids = JSONObject.parseArray(Sellist, Integer.class);
         List<Integer> Judids = JSONObject.parseArray(Judlist, Integer.class);
+        List<Integer> Multipleids = JSONObject.parseArray(Mullist, Integer.class);
 
-        System.out.println(Selids.toString());
 
         ArrayList<Choice> Choicelist = new ArrayList<>();
         ArrayList<Judge> Judgelist = new ArrayList<>();
+        ArrayList<MultipleChoice> Multiplelist = new ArrayList<>();
 
         System.out.println(exam);
 
@@ -73,12 +78,14 @@ public class StudentController {
         for (Integer Judid : Judids) {
             Judgelist.add( judgeService.getById(Judid));
         }
-
-        System.out.println(Judgelist.toString());
+        for (Integer Multipleid : Multipleids) {
+            Multiplelist.add( multipleChoiceService.getById(Multipleid));
+        }
         Student student = new Student("2019401197", "徐佳力", "123", "软件学院", "2019-09-12");
         hashMap.put("exam",exam);
         hashMap.put("choicelist",Choicelist);
         hashMap.put("judgelist",Judgelist);
+        hashMap.put("multiplelist",Multiplelist);
         hashMap.put("student",student);
         return  hashMap;
 
@@ -92,14 +99,15 @@ public class StudentController {
         String studentid = examInfo.getStudentid();
         ArrayList<String> answerchoice = examInfo.getAnswerchoice();
         ArrayList<String> answerjudge = examInfo.getAnswerjudge();
+        ArrayList<String> answermultiple = examInfo.getAnswermultiple();
 
         Exam exam = examService.getById(examid);
         System.out.println(exam.toString());
         //json转换为list
         List<Integer> Sellist = JSONObject.parseArray(exam.getSellist(), Integer.class);
         List<Integer> Judlist = JSONObject.parseArray(exam.getJudlist(), Integer.class);
+        List<Integer> Multiplelist = JSONObject.parseArray(exam.getMultiplelist(), Integer.class);
 
-        System.out.println("选择题和填空题的id"+Sellist.toString() +"  "+ Judlist.toString());
         int score = 0;
         for( int i = 0; i < answerchoice.size(); i++){
             if(answerchoice.get(i).equals(choiceService.getById(Sellist.get(i)).getAnswer())  )
@@ -110,12 +118,18 @@ public class StudentController {
             if(answerjudge.get(i).equals(judgeService.getById(Judlist.get(i)).getAnswer()) )
                 score += examService.getById(examid).getJudscore();
         }
+        for( int i = 0; i < answermultiple.size(); i++){
+            if(answermultiple.get(i).equals(multipleChoiceService.getById(Multiplelist.get(i)).getAnswer()) )
+                score += examService.getById(examid).getJudscore();
+        }
         String Selanlist = JSON.toJSON(answerchoice).toString();
         String Judanlist = JSON.toJSON(answerjudge).toString();
+        String Mulanlist = JSON.toJSON(answermultiple).toString();
 
         System.out.println("填写的选择题答案:"+Selanlist);
-        System.out.println("填写的填空题答案:"+Judanlist);
-        Test test = new Test(studentid, examid, exam.getSellist(), exam.getJudlist(), Selanlist, Judanlist, score);
+        System.out.println("填写的判断题答案:"+Judanlist);
+        System.out.println("填写的多选题答案:"+Mulanlist);
+        Test test = new Test(studentid, examid, exam.getSellist(), exam.getJudlist(), exam.getMultiplelist(),Selanlist, Judanlist,Mulanlist, score);
         System.out.println("试卷:"+test.toString());
         testService.save(test);
         return "redirect:histoty";
@@ -143,24 +157,27 @@ public class StudentController {
         Test test = testService.getByIdAndStuid(id, Stuid);
         String selanlist = test.getSelanlist();
         String judanlist = test.getJudanlist();
+        String mulanlist = test.getMulanlist();
 
         List<String> selan = JSONObject.parseArray(selanlist, String.class);
         List<String> judan = JSONObject.parseArray(judanlist, String.class);
-        System.out.println(selan.toString());
-        System.out.println(judan.toString());
+        List<String> mulan = JSONObject.parseArray(mulanlist, String.class);
 
         Exam exam = examService.getById(id);
         String Sellist = exam.getSellist();
         String Judlist = exam.getJudlist();
+        String Mullist = exam.getMultiplelist();
 
 
         List<Integer> Selids = JSONObject.parseArray(Sellist, Integer.class);
         List<Integer> Judids = JSONObject.parseArray(Judlist, Integer.class);
+        List<Integer> Mulids = JSONObject.parseArray(Mullist, Integer.class);
 
         System.out.println(Selids.toString());
 
         ArrayList<Choice> Choicelist = new ArrayList<>();
         ArrayList<Judge> Judgelist = new ArrayList<>();
+        ArrayList<MultipleChoice> Multiplelist = new ArrayList<>();
 
         for (Integer Selid : Selids) {
             Choicelist.add(choiceService.getById(Selid));
@@ -170,13 +187,21 @@ public class StudentController {
             Judgelist.add( judgeService.getById(Judid));
         }
         System.out.println(Judgelist.toString());
+        for (Integer Mulid : Mulids) {
+            Multiplelist.add( multipleChoiceService.getById(Mulid));
+        }
+        System.out.println(Multiplelist.toString());
         Student student = new Student("2019401197", "徐佳力", "123", "软件学院", "2019-09-12");
         hashMap.put("exam",exam);
         hashMap.put("choicelist",Choicelist);
         hashMap.put("judgelist",Judgelist);
+        hashMap.put("multiplelist",Multiplelist);
         hashMap.put("student",student);
         hashMap.put("selan",selan);
         hashMap.put("judan",judan);
+        hashMap.put("mulan",mulan);
+        System.out.println("score:"+test.getScore());
+        hashMap.put("score",test.getScore());
         return hashMap;
     }
 }

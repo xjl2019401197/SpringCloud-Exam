@@ -12,7 +12,9 @@ import java.util.List;
 @Mapper
 //@CacheNamespace(implementation= MybatisRedisCache.class,eviction=MybatisRedisCache.class)
 public interface JudgeMapper extends BaseMapper<Judge> {
-    @Select("select id from  judge   order by RAND() limit ${Judnum}")
+    @Select("SELECT * FROM `judge` AS t1 JOIN (SELECT ROUND(RAND() * ((SELECT MAX(id) FROM `judge`)-(SELECT MIN(id) FROM `judge`))+(SELECT MIN(id) FROM `judge`)) AS id) AS t2\n" +
+            "WHERE t1.id >= t2.id\n" +
+            "ORDER BY t1.id LIMIT ${Judnum}")
     List<Integer> getIdList(int Judnum);
     @Select("alter table Judge AUTO_INCREMENT=1")
     void reset();

@@ -16,4 +16,5 @@ public class ExamInfo  implements Serializable {
     private String studentid;
     private ArrayList<String> answerchoice;
     private ArrayList<String> answerjudge;
+    private ArrayList<String> answermultiple;
 }

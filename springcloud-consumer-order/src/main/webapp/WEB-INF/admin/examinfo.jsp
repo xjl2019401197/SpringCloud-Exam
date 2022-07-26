@@ -65,7 +65,8 @@
                     SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String now = sdf.format(new Date());
                     request.setAttribute("currentTime", now);
-                    System.out.println(now);
+
+
                 %>
                 <c:choose>
                     <c:when test="${exam.enddate < currentTime}">
@@ -143,6 +144,16 @@
                         <span class="input-group-addon" style="height: 40px ; tab-size: 16px">每小题分数：</span>
                         <input type="text" style="height: 40px" class="form-control" id="judscore"
                                name="judscore">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="height: 40px ; tab-size: 16px">多选题题数：</span>
+                        <input type="text" style="height: 40px" class="form-control" id="multiplenum"
+                               name="multiplenum">
+                    </div>
+                    <div class="form-group input-group">
+                        <span class="input-group-addon" style="height: 40px ; tab-size: 16px">每小题分数：</span>
+                        <input type="text" style="height: 40px" class="form-control" id="multiplescore"
+                               name="multiplescore">
                     </div>
                     <div class="form-group input-group">
                         <span class="input-group-addon" style="height: 40px ; tab-size: 16px">请输入考试时长：</span>
@@ -233,6 +244,8 @@
                 $("#selscore").val(data.selscore);
                 $("#judnum").val(data.judnum);
                 $("#judscore").val(data.judscore);
+                $("#multiplenum").val(data.multiplenum);
+                $("#multiplescore").val(data.multiplescore);
                 $("#examtime").val(data.examtime);
                 $("#state").val(data.state);
                 $("#teacher").append("<option value='"+data.teacher+"'>"+data.teacher+"</option>")

@@ -55,6 +55,7 @@ public class SendEamil {
 
         //邮件内容
         mimeMessage.setContent("老师发布考试了，请尽快完成", "text/html;charset=UTF-8");
+//        mimeMessage.setContent("傻鸟", "text/html;charset=UTF-8");
 
         //发送邮件
         transport.sendMessage(mimeMessage, mimeMessage.getAllRecipients());
@@ -63,4 +64,6 @@ public class SendEamil {
         transport.close();
 
     }
+
+
 }

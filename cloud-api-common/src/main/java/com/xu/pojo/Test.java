@@ -16,7 +16,9 @@ public class Test  implements Serializable {
     private int Id;
     private String Sellist;
     private String Judlist;
+    private String Multiplelist;
     private String Selanlist;
     private String Judanlist;
+    private String Mulanlist;
     private int score;
 }

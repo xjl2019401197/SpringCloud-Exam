@@ -91,6 +91,18 @@
                         <input name="Judscore" id="Judscore"  class="layui-input" lay-verify="required" placeholder="判断题分数">
                     </div>
                 </div>
+                <div class="layui-form-item" style="padding: 10px; ">
+                    <label class="layui-form-label">多选题数量:</label>
+                    <div class="layui-input-block" style="width: 380px">
+                        <input name="Multiplenum" id="Multiplenum"  class="layui-input" lay-verify="required" placeholder="多选题数量">
+                    </div>
+                </div>
+                <div class="layui-form-item" style="padding: 10px; ">
+                    <label class="layui-form-label">每小题分数:</label>
+                    <div class="layui-input-block" style="width: 380px">
+                        <input name="Multiplescore" id="Multiplescore"  class="layui-input" lay-verify="required" placeholder="多选题分数">
+                    </div>
+                </div>
                 <%
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String now = simpleDateFormat.format(new Date()).replace(" ","T");

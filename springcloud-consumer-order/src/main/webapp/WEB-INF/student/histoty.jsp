@@ -37,9 +37,10 @@
         <tr>
             <th width="10%">考试名称</th>
             <th width="25%">考试时间</th>
-            <th width="15%">时长</th>
-            <th width="20%">成绩</th>
+            <th width="10%">时长</th>
+            <th width="15%">成绩</th>
             <th width="10%">命题人</th>
+            <th width="10%">操作</th>
         </tr>
         </thead>
         <tbody>
@@ -52,6 +53,7 @@
                 <td>${exam.examtime}</td>
                 <td>${tests.get(status.index).score}</td>
                 <td>${exam.teacher}</td>
+                <td><button type="button" onclick="window.location.href='<%=request.getContextPath()%>/testhistory?id=${exam.id}&Stuid=${Stuid}'">打印</button> </td>
             </tr>
         </c:forEach>
         </tbody>

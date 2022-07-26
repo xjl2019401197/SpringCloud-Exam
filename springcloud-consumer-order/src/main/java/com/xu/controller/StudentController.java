@@ -62,12 +62,14 @@ public class StudentController {
         String studentStr = objectMapper.writeValueAsString(hashMap.get("student"));
         ArrayList<Choice> Choicelist = new ArrayList<>();
         ArrayList<Judge>  Judgelist= new ArrayList<>();
+        ArrayList<MultipleChoice>  Multiplelist= new ArrayList<>();
 
 
         Exam exam = objectMapper.readValue(examStr, Exam.class);
         Student student = objectMapper.readValue(studentStr, Student.class);
         Object choicelist = hashMap.get("choicelist");
         Object judgelist = hashMap.get("judgelist");
+        Object multiplelist = hashMap.get("multiplelist");
 
 
         for(Object o: (List<?>) choicelist)
@@ -83,23 +85,31 @@ public class StudentController {
 
             Judgelist.add(objectMapper.readValue(judge, Judge.class)) ;
         }
+
+        for(Object o: (List<?>) multiplelist)
+        {
+            String multiple = objectMapper.writeValueAsString(o);
+
+            Multiplelist.add(objectMapper.readValue(multiple, MultipleChoice.class)) ;
+        }
         model.addAttribute("Stuid",Stuid);
         model.addAttribute("exam",exam);
         model.addAttribute("choicelist",Choicelist);
         model.addAttribute("judgelist",Judgelist);
+        model.addAttribute("multiplelist",Multiplelist);
         model.addAttribute("student",student);
         return "student/exam";
     }
 
     @RequestMapping("/submittest")
-    public String submittest(int examid, String studentid, @RequestParam ArrayList<String> answerchoice, @RequestParam ArrayList<String> answerjudge){
+    public String submittest(int examid, String studentid, @RequestParam ArrayList<String> answerchoice, @RequestParam ArrayList<String> answerjudge,@RequestParam ArrayList<String> answermultiple){
         // 1、使用postForObject请求接口
-        return restTemplate.postForObject(serverURL + "/submittest",new ExamInfo(examid,studentid,answerchoice,answerjudge),String.class);
+        return restTemplate.postForObject(serverURL + "/submittest",new ExamInfo(examid,studentid,answerchoice,answerjudge,answermultiple),String.class);
     }
     @RequestMapping("/histoty")
     public String histoty(Model model,String Stuid) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        HashMap<String,Object> hashMap = restTemplate.getForObject(serverURL + "/histoty/"+Stuid, HashMap.class);
+        HashMap<String,Object> hashMap = restTemplate.getForObject(serverURL + "/histoty/"+"2019401190", HashMap.class);
         System.out.println("hashMap="+hashMap+"Stuid="+Stuid);
         Object examlist = hashMap.get("exams");
         Object testlist = hashMap.get("tests");
@@ -119,8 +129,8 @@ public class StudentController {
         }
         model.addAttribute("Stuid",Stuid);
         model.addAttribute("exams",exams);
-        System.out.println(exams);
-        System.out.println(tests);
+//        System.out.println(exams);
+//        System.out.println(tests);
         model.addAttribute("tests",tests);
         return "student/histoty";
     }
@@ -128,20 +138,27 @@ public class StudentController {
     @RequestMapping("/testhistory")
     public String testhistory(Model model, @RequestParam Integer id,@RequestParam String Stuid) throws JsonProcessingException {
         ObjectMapper objectMapper = new ObjectMapper();
-        HashMap<String ,Object> hashMap = restTemplate.getForObject(serverURL + "/testhistory/"+id+"/"+Stuid, HashMap.class);
+        HashMap<String ,Object> hashMap = restTemplate.getForObject(serverURL + "/testhistory/"+id+"/"+"2019401190", HashMap.class);
         String examStr = objectMapper.writeValueAsString(hashMap.get("exam"));
         String studentStr = objectMapper.writeValueAsString(hashMap.get("student"));
+        System.out.println(hashMap);
+
         ArrayList<Choice> Choicelist = new ArrayList<>();
         ArrayList<Judge>  Judgelist= new ArrayList<>();
+        ArrayList<MultipleChoice>  Multiplelist= new ArrayList<>();
         ArrayList<String> Sellist = new ArrayList<>();
         ArrayList<String> Judlist = new ArrayList<>();
+        ArrayList<String> Multlist = new ArrayList<>();
 
         Exam exam = objectMapper.readValue(examStr, Exam.class);
         Student student = objectMapper.readValue(studentStr, Student.class);
         Object choicelist = hashMap.get("choicelist");
         Object judgelist = hashMap.get("judgelist");
+        Object multiplelist = hashMap.get("multiplelist");
         Object sellist = hashMap.get("selan");
         Object judlist = hashMap.get("judan");
+        Object mullist = hashMap.get("mulan");
+        Object score = hashMap.get("score");
 
         for(Object o: (List<?>) choicelist)
         {
@@ -156,6 +173,12 @@ public class StudentController {
 
             Judgelist.add(objectMapper.readValue(judge, Judge.class)) ;
         }
+        for(Object o: (List<?>) multiplelist)
+        {
+            String multiple = objectMapper.writeValueAsString(o);
+
+            Multiplelist.add(objectMapper.readValue(multiple, MultipleChoice.class)) ;
+        }
         for(Object o: (List<?>) sellist)
         {
             String sel = objectMapper.writeValueAsString(o);
@@ -168,12 +191,21 @@ public class StudentController {
 
             Judlist.add(objectMapper.readValue(jud, String.class)) ;
         }
+        for(Object o: (List<?>) mullist)
+        {
+            String mul = objectMapper.writeValueAsString(o);
+
+            Multlist.add(objectMapper.readValue(mul, String.class)) ;
+        }
         model.addAttribute("exam",exam);
         model.addAttribute("choicelist",Choicelist);
         model.addAttribute("judgelist",Judgelist);
+        model.addAttribute("multiplelist",Multiplelist);
         model.addAttribute("student",student);
         model.addAttribute("selan",Sellist);
         model.addAttribute("judan",Judlist);
+        model.addAttribute("Mulan",Multlist);
+        model.addAttribute("score",score);
         return "student/testhistory";
     }
 }

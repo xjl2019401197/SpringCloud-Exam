@@ -14,6 +14,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.concurrent.ArrayBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 
 @Controller
 public class AdminController {
@@ -32,6 +35,8 @@ public class AdminController {
     @Autowired
     private JudgeService judgeService;
 
+    @Autowired
+    private MultipleChoiceService multipleChoiceService;
 
     @Autowired
     private ExamService examService;
@@ -280,6 +285,124 @@ public class AdminController {
     }
 
 
+    @GetMapping("/allmultipleChoice")
+    @ResponseBody
+    public String allmultipleChoice() {
+        List<MultipleChoice> list = multipleChoiceService.getAllMultipleChoice();
+        System.out.println(list);
+        int count ;
+        if(list != null)
+            count = list.size();
+        else {
+            count = 0;
+            list = new ArrayList<>();
+        }
+        String data = JSON.toJSONString(list);
+        data = "{\"code\": 0,\"msg\": \"\",\"count\": " + count + ",\"data\":" + data + "}";
+        return data;
+    }
+
+    @RequestMapping("/addmultipleChoice")
+    @ResponseBody
+    public String addmultipleChoice() {
+        return "admin/addmultipleChoice";
+    }
+
+    @PostMapping("/insertmultipleChoice")
+    @ResponseBody
+    public String insertmultipleChoice(@RequestBody MultipleChoice multipleChoice) {
+        System.out.println(multipleChoice);
+        System.out.println(multipleChoice.getAnswer());
+        JSONObject jsonObject = new JSONObject();
+        try {
+            if (multipleChoiceService.save(multipleChoice) )
+                jsonObject.put("code", "0");
+        } catch (Exception e) {
+            jsonObject.put("code", "1");
+            e.printStackTrace();
+        }
+        return jsonObject.toJSONString();
+    }
+
+    @PostMapping("/UploadmultipleChoice")
+    @ResponseBody
+    public String UploadmultipleChoice(@RequestBody List<List<Object>> listob) {
+        System.out.println(listob);
+        for (List<Object> objects : listob) {
+            MultipleChoice multipleChoice = new MultipleChoice();
+            multipleChoice.setTopic((String) objects.get(0));
+            multipleChoice.setA((String) objects.get(1));
+            multipleChoice.setB((String) objects.get(2));
+            multipleChoice.setC((String) objects.get(3));
+            multipleChoice.setD((String) objects.get(4));
+            multipleChoice.setAnswer((String) objects.get(5));
+            multipleChoice.setType((String) objects.get(6));
+            multipleChoice.setDifficulty((String) objects.get(7));
+            System.out.println(multipleChoice);
+            multipleChoiceService.reset();
+            try {
+                multipleChoiceService.save(multipleChoice);
+
+            }catch (Exception e){
+                System.out.println("题库重复了");
+            }
+        }
+        return "redirect:multipleChoice";
+    }
+
+    @PostMapping("/deletemultipleChoice")
+    @ResponseBody
+    public R deletemultipleChoice(@RequestBody List<String> list) {
+        R r = new R();
+        r.setFlag(true);
+        List<Exam> exams = examService.list();
+        String arrsellist = null;
+//        for (Exam exam : exams) {
+//            String sellist = exam.getmultiplelist();
+//            arrsellist = arrsellist + sellist;
+//        }
+        for (String id : list) {
+            try {
+                if (arrsellist != null && arrsellist.contains(id)) {
+                    r.setFlag(false);
+                    list.add(id);
+                } else {
+                    multipleChoiceService.removeById(id);
+                    multipleChoiceService.reset();
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        r.setData(list);
+        return r;
+    }
+
+    @GetMapping("/updatemultipleChoicejsp/{id}")
+    @ResponseBody
+    public MultipleChoice updatemultipleChoicejsp(@PathVariable String id) {
+        System.out.println(id);
+        MultipleChoice multipleChoice = multipleChoiceService.getById(Integer.parseInt(id));
+        return multipleChoice;
+    }
+
+    @PostMapping("/updatemultipleChoice")
+    @ResponseBody
+    public String updatemultipleChoice(@RequestBody MultipleChoice multipleChoice) {
+        JSONObject jsonObject = new JSONObject();
+        System.out.println("flag="+multipleChoice);
+        try {
+            multipleChoiceService.updateById(multipleChoice);
+            jsonObject.put("code", 0);
+        } catch (Exception e) {
+            jsonObject.put("code", 1);
+        }
+        return jsonObject.toJSONString();
+    }
+
+
+
+
     /*
      * Teacher
      * */
@@ -361,6 +484,7 @@ public class AdminController {
     }
 
 
+
     /*
      * 新建考试
      * */
@@ -369,25 +493,44 @@ public class AdminController {
     public List<Teacher> newexam() {
         return teacherService.list();
     }
-
+    private static final int CORE_POOL_SIZE = 5;
+    private static final int MAX_POOL_SIZE = 10;
+    private static final int QUEUE_CAPACITY = 100;
+    private static final Long KEEP_ALIVE_TIME = 1L;
     @PostMapping("/insertexam")
     @ResponseBody
     public String insertexam(@RequestBody Exam exam) throws GeneralSecurityException, MessagingException {
-        int selnum = exam.getSelnum();
-        List<Integer> Sellist = choiceService.getIdList(selnum);
+        ThreadPoolExecutor executor = new ThreadPoolExecutor(
+                CORE_POOL_SIZE,
+                MAX_POOL_SIZE,
+                KEEP_ALIVE_TIME,
+                TimeUnit.SECONDS,
+                new ArrayBlockingQueue<>(QUEUE_CAPACITY),
+                new ThreadPoolExecutor.CallerRunsPolicy());
+        executor.execute(()->{
+            int selnum = exam.getSelnum();
+            List<Integer> Sellist = choiceService.getIdList(selnum);
 
-        int judnum = exam.getJudnum();
-        List<Integer> Judlist = judgeService.getIdList(judnum);
-        exam.setSellist(JSON.toJSON(Sellist).toString());
-        exam.setJudlist(JSON.toJSON(Judlist).toString());
-        examService.save(exam);
-        new Thread(() -> {
+            int judnum = exam.getJudnum();
+            List<Integer> Judlist = judgeService.getIdList(judnum);
+
+            int multiplenum = exam.getMultiplenum();
+            List<Integer> Multiplelist = multipleChoiceService.getIdList(multiplenum);
+
+            exam.setSellist(JSON.toJSON(Sellist).toString());
+            exam.setJudlist(JSON.toJSON(Judlist).toString());
+            exam.setMultiplelist(JSON.toJSON(Multiplelist).toString());
+
+            examService.save(exam);
+        });
+        executor.execute(()->{
             try {
                 SendEamil.abc();
             } catch (Exception e) {
                 e.printStackTrace();
             }
-        }, "Thead name").start();
+        });
+        executor.shutdown();
         JSONObject jsonObject = new JSONObject();
         try {
 //            if(examService.save(exam))
@@ -431,7 +574,18 @@ public class AdminController {
     @PostMapping("/updateexam")
     @ResponseBody
     public String updateexam(@RequestBody Exam exam) {
-        System.out.println(exam);
+        int selnum = exam.getSelnum();
+        List<Integer> Sellist = choiceService.getIdList(selnum);
+
+        int judnum = exam.getJudnum();
+        List<Integer> Judlist = judgeService.getIdList(judnum);
+
+        int multiplenum = exam.getMultiplenum();
+        List<Integer> Multiplelist = multipleChoiceService.getIdList(multiplenum);
+
+        exam.setSellist(JSON.toJSON(Sellist).toString());
+        exam.setJudlist(JSON.toJSON(Judlist).toString());
+        exam.setMultiplelist(JSON.toJSON(Multiplelist).toString());
         examService.updateById(exam);
         return "redirect:examinfo";
     }

@@ -21,9 +21,12 @@ public class Exam  implements Serializable {
     private int Selscore;
     private int Judnum;
     private int Judscore;
+    private int Multiplenum;
+    private int Multiplescore;
     private String Begindate;
     private String Enddate;
     private int Examtime;
     private String Sellist;
     private String Judlist;
+    private String Multiplelist;
 }

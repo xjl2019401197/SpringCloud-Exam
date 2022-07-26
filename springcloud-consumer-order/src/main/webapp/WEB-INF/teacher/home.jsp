@@ -73,10 +73,13 @@
                         <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i>题库<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level">
                             <li>
-                                <a href="<%=basePath%>/select" target="frame">选择题查询</a>
+                                <a href="<%=basePath%>/select" target="frame">选择题</a>
                             </li>
                             <li>
-                                <a href="<%=basePath%>/judge" target="frame">判断题查询</a>
+                                <a href="<%=basePath%>/judge" target="frame">判断题</a>
+                            </li>
+                            <li>
+                                <a href="<%=basePath%>/multipleChoice" target="frame">多选题</a>
                             </li>
 
                         </ul>
