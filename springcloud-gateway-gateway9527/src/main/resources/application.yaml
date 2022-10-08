@@ -1,0 +1,40 @@
+server:
+  port: 9527
+spring:
+  application:
+    name: cloud-gateway
+#  datasource:
+#    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+#    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+#    url: jdbc:mysql://localhost:3306/exam?useUnicode=true&characterEncoding=utf-8&useSSL=false
+#    username: root
+#    password: xjl011025
+  cloud:
+    nacos:
+#      config:
+#        server-addr: 124.223.182.14:1111
+      discovery:
+        # 换成nginx的1111端口，做集群
+
+       server-addr: 124.223.182.14:1111
+#        server-addr: 127.0.0.1:8848 #nacos服务地址
+
+    gateway:
+      discovery:
+        locator:
+          enabled: true #使用服务发现路由
+      routes:
+        - id: SERVICE-ONE
+          uri: lb://nacos-payment-provider/
+          predicates:
+            - Path=/** #路径匹配规则
+#      routes:
+#        - id: SERVICE-TWO #设置路由id(理论上是可以随便写的)
+#          uri: lb://nacos-payment-provider/ #设置路由的url lb://nacos服务注册名称
+#          predicates:
+#            - Path=/nacos-payment-provider #路径匹配规则
+#        - id: SERVICE-ONE #设置路由id(理论上是可以随便写的)
+#          uri: lb://nacos-payment-order/ #设置路由的url lb://nacos服务注册名称
+#          predicates:
+#            - Path=/** #路径匹配规则
+

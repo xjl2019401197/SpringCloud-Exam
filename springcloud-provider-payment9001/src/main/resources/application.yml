@@ -1,0 +1,42 @@
+spring:
+  application:
+    name: nacos-payment-provider
+  cloud:
+    nacos:
+      discovery:
+        # 换成nginx的1111端口，做集群
+        server-addr: 124.223.182.14:1111
+#        server-addr: localhost:8848 #配置Nacos地址
+  datasource:
+    type: com.alibaba.druid.pool.DruidDataSource            # 当前数据源操作类型
+    driver-class-name: com.mysql.jdbc.Driver              # mysql驱动包
+    url: jdbc:mysql://localhost:3306/exam?useUnicode=true&characterEncoding=utf-8&useSSL=false
+    username: root
+    password: xjl011025
+  main:
+    allow-circular-references: true
+  redis:
+    host: 124.223.182.14
+    port: 6399
+    database: 0
+    password: xjl2550908862xjl011025.
+#  configuration:
+#    # 是否开启自动驼峰命名规则（camel case）映射，即从经典数据库列名 A_COLUMN（下划线命名） 到经典 Java 属性名 aColumn（驼峰命名） 的类似映射
+#    map-underscore-to-camel-case: false
+server:
+  port: 9001
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: '*'
+
+
+mybatis-plus:
+  global-config:
+    db-config:
+      id-type: 0
+      table-underline: false
+  configuration:
+    map-underscore-to-camel-case: false
